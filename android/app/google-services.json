@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "110342669459",
+    "project_id": "digital-cv-app-d06ff",
+    "storage_bucket": "digital-cv-app-d06ff.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:110342669459:android:3775ff63b111415cb63966",
+        "android_client_info": {
+          "package_name": "com.example.digital_cv_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAK46QvzT1Sk-YZHUsXgwe62uN9Un-b89Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
