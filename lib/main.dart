@@ -1,3 +1,4 @@
+import 'package:digital_cv_app/features/cv/presentation/pages/create_cv_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -29,7 +30,7 @@ class DigitalCVApp extends StatelessWidget {
       title: 'Digital CV',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const LoginPage(),
+      home: const CreateCvPage(),
     );
   }
 }
