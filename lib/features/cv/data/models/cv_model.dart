@@ -1,3 +1,5 @@
+import 'package:digital_cv_app/features/cv/domain/entities/skill_entity.dart';
+
 import '../../domain/entities/cv_entity.dart';
 
 class CvModel extends CvEntity {
@@ -11,6 +13,20 @@ class CvModel extends CvEntity {
     required super.experiences,
     required super.education,
   });
+
+  factory CvModel.fromMap(Map<String, dynamic> map) {
+    return CvModel(
+      userId: map['userId'],
+      username: map['username'],
+      email: map['email'],
+      bio: map['bio'],
+      skills: (map['skills'] as List)
+          .map((e) => SkillEntity(name: e))
+          .toList(),
+      experiences: [],
+      education: [],
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return {

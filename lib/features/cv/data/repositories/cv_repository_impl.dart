@@ -24,4 +24,9 @@ class CvRepositoryImpl implements CvRepository {
 
     return remoteDataSource.saveCv(model);
   }
+
+  @override
+  Future<CvEntity?> getCv(String userId) {
+    return remoteDataSource.getCv(userId);
+  }
 }

@@ -13,4 +13,16 @@ class CvRemoteDataSource {
         .doc(cv.userId)
         .set(cv.toMap());
   }
+  
+  Future<CvModel?> getCv(String userId) async {
+
+  final doc = await firestore
+      .collection("cvs")
+      .doc(userId)
+      .get();
+
+  if (!doc.exists) return null;
+
+  return CvModel.fromMap(doc.data()!);
+}
 }
