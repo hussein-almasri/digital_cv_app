@@ -8,16 +8,17 @@ class CvEntity {
   final String username;
   final String email;
   final String bio;
+  final String profileImage;
 
   final List<SkillEntity> skills;
   final List<ExperienceEntity> experiences;
   final List<EducationEntity> education;
-
   CvEntity({
     required this.userId,
     required this.username,
     required this.email,
     required this.bio,
+    required this.profileImage,
     required this.skills,
     required this.experiences,
     required this.education,

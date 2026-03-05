@@ -17,10 +17,11 @@ class CvRepositoryImpl implements CvRepository {
       username: cv.username,
       email: cv.email,
       bio: cv.bio,
+      profileImage: cv.profileImage,
       skills: cv.skills,
       experiences: cv.experiences,
       education: cv.education,
-    );
+);
 
     return remoteDataSource.saveCv(model);
   }

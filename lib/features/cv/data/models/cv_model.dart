@@ -12,6 +12,7 @@ class CvModel extends CvEntity {
     required super.skills,
     required super.experiences,
     required super.education,
+    required super.profileImage,
   });
 
   factory CvModel.fromMap(Map<String, dynamic> map) {
@@ -20,6 +21,7 @@ class CvModel extends CvEntity {
       username: map['username'],
       email: map['email'],
       bio: map['bio'],
+      profileImage: map['profileImage'] ?? "",
       skills: (map['skills'] as List)
           .map((e) => SkillEntity(name: e))
           .toList(),
@@ -34,6 +36,7 @@ class CvModel extends CvEntity {
       'username': username,
       'email': email,
       'bio': bio,
+      'profileImage': profileImage,
       'skills': skills.map((e) => e.name).toList(),
       'experiences': experiences.map((e) => {
         'company': e.company,
