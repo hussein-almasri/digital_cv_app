@@ -21,6 +21,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   final picker = ImagePicker();
 
+  Future<Map<String, dynamic>> loadProfile(String userId, String email) async {
+
+    final doc = await FirestoreService().getUser(userId).first;
+
+    if (!doc.exists) {
+
+      String name = email.split("@")[0];
+
+      await FirestoreService().saveUserProfile(
+        userId,
+        name,
+        email,
+        "",
+      );
+
+      return {
+        "name": name,
+        "email": email,
+        "bio": "",
+        "avatar": ""
+      };
+    }
+
+    return doc.data() as Map<String, dynamic>;
+  }
+
   Future<void> pickImage(String userId) async {
 
     final pickedFile =
@@ -30,7 +56,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     File file = File(pickedFile.path);
 
-    // رفع الصورة إلى Firebase Storage
     final ref = FirebaseStorage.instance
         .ref()
         .child("profile_images")
@@ -40,9 +65,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     final imageUrl = await ref.getDownloadURL();
 
-    // حفظ الرابط في Firestore
     await FirestoreService().updateProfileImage(userId, imageUrl);
 
+    setState(() {});
   }
 
   @override
@@ -50,8 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     final auth = Provider.of<AuthProvider>(context);
     final userId = auth.user?.uid ?? "";
-
-    final firestore = FirestoreService();
+    final email = auth.user?.email ?? "";
 
     return Scaffold(
 
@@ -59,41 +83,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: const Text("Profile"),
       ),
 
-      body: StreamBuilder(
+      body: FutureBuilder(
 
-        stream: firestore.getUser(userId),
+        future: loadProfile(userId, email),
 
         builder: (context, snapshot) {
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
           if (!snapshot.hasData) {
             return const Center(
-              child: Text("No profile data yet"),
+              child: CircularProgressIndicator(),
             );
           }
 
-          final doc = snapshot.data!;
+          final data = snapshot.data as Map<String, dynamic>;
 
-          if (!doc.exists) {
-            return const Center(
-              child: Text("No profile created yet"),
-            );
-          }
-
-          final data = doc.data() as Map<String, dynamic>?;
-
-          if (data == null) {
-            return const Center(
-              child: Text("Profile is empty"),
-            );
-          }
-
-          final avatar =
-              data["avatar"] ??
-              "https://i.pravatar.cc/300";
+          final avatar = data["avatar"];
 
           return Padding(
 
@@ -113,7 +117,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     radius: 50,
 
-                    backgroundImage: NetworkImage(avatar),
+                    backgroundColor: Colors.grey.shade300,
+
+                    backgroundImage:
+                        avatar != null && avatar != ""
+                            ? NetworkImage(avatar)
+                            : null,
+
+                    child: avatar == null || avatar == ""
+                        ? const Icon(
+                            Icons.person,
+                            size: 40,
+                            color: Colors.white,
+                          )
+                        : null,
 
                   ),
 
@@ -123,15 +140,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 const Text(
                   "Tap image to change",
-                  style: TextStyle(
-                    color: Colors.grey,
-                  ),
+                  style: TextStyle(color: Colors.grey),
                 ),
 
                 const SizedBox(height: 20),
 
                 Text(
-                  data["name"] ?? "No Name",
+                  data["name"] ?? "User",
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -151,11 +166,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 Card(
                   child: ListTile(
-
                     leading: const Icon(Icons.edit),
-
                     title: const Text("Edit Profile"),
-
                     onTap: () {
 
                       Navigator.push(
@@ -171,11 +183,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 Card(
                   child: ListTile(
-
                     leading: const Icon(Icons.logout),
-
                     title: const Text("Logout"),
-
                     onTap: () async {
 
                       await auth.logout();

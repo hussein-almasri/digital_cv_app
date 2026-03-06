@@ -4,17 +4,88 @@ class FirestoreService {
 
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  // Add Skill
+  // إنشاء user profile إذا لم يكن موجود
+  Future<void> createUserIfNotExists(
+      String userId,
+      String email,
+      ) async {
+
+    final doc = await _db.collection("users").doc(userId).get();
+
+    if (!doc.exists) {
+
+      String username = email.split("@")[0];
+
+      await _db.collection("users").doc(userId).set({
+
+        "name": username,
+        "email": email,
+        "bio": "",
+        "avatar": ""
+
+      });
+
+    }
+
+  }
+
+  // -----------------------------
+  // USER PROFILE
+  // -----------------------------
+
+  Future<void> saveUserProfile(
+    String userId,
+    String name,
+    String email,
+    String bio,
+  ) async {
+
+    await _db.collection("users").doc(userId).set({
+
+      "name": name,
+      "email": email,
+      "bio": bio,
+
+    }, SetOptions(merge: true));
+
+  }
+
+  Future<void> updateProfileImage(
+      String userId,
+      String imageUrl) async {
+
+    await _db.collection("users").doc(userId).set({
+
+      "avatar": imageUrl,
+
+    }, SetOptions(merge: true));
+
+  }
+
+  Stream<DocumentSnapshot> getUser(String userId){
+
+    return _db
+        .collection("users")
+        .doc(userId)
+        .snapshots();
+
+  }
+
+  // -----------------------------
+  // SKILLS
+  // -----------------------------
+
   Future<void> addSkill(String userId, String skill) async {
 
     await _db.collection("skills").add({
+
       "userId": userId,
       "skillName": skill,
+
     });
 
   }
 
-  // Get Skills
   Stream<QuerySnapshot> getSkills(String userId){
 
     return _db
@@ -24,14 +95,16 @@ class FirestoreService {
 
   }
 
-  // Delete Skill
   Future<void> deleteSkill(String id) async {
 
     await _db.collection("skills").doc(id).delete();
 
   }
 
-  // Add Experience
+  // -----------------------------
+  // EXPERIENCE
+  // -----------------------------
+
   Future<void> addExperience(
     String userId,
     String jobTitle,
@@ -47,43 +120,6 @@ class FirestoreService {
       "description": description,
 
     });
-
-  }
-
-  // Save User Profile
-  Future<void> saveUserProfile(
-    String userId,
-    String name,
-    String email,
-    String bio,
-  ) async {
-
-    await _db.collection("users").doc(userId).set({
-
-      "name": name,
-      "email": email,
-      "bio": bio,
-
-    });
-
-  }
-
-  // Update Profile Image
- Future<void> updateProfileImage(String userId, String imageUrl) async {
-
-  await _db.collection("users").doc(userId).set({
-    "avatar": imageUrl,
-  }, SetOptions(merge: true));
-
-}
-
-  // Get User Data
-  Stream<DocumentSnapshot> getUser(String userId){
-
-    return _db
-        .collection("users")
-        .doc(userId)
-        .snapshots();
 
   }
 
