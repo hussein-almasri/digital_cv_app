@@ -1,13 +1,49 @@
+import 'dart:io';
+
 import 'package:digital_cv_app/screens/profile/edit_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
 import '../../providers/auth_provider.dart';
 import '../../services/firestore_service.dart';
 import '../../screens/auth/login_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
-
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+
+  final picker = ImagePicker();
+
+  Future<void> pickImage(String userId) async {
+
+    final pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile == null) return;
+
+    File file = File(pickedFile.path);
+
+    // رفع الصورة إلى Firebase Storage
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child("profile_images")
+        .child("$userId.jpg");
+
+    await ref.putFile(file);
+
+    final imageUrl = await ref.getDownloadURL();
+
+    // حفظ الرابط في Firestore
+    await FirestoreService().updateProfileImage(userId, imageUrl);
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,14 +63,38 @@ class ProfileScreen extends StatelessWidget {
 
         stream: firestore.getUser(userId),
 
-        builder: (context, snapshot){
+        builder: (context, snapshot) {
 
-          if(!snapshot.hasData){
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final data = snapshot.data!.data() as Map<String, dynamic>;
-          
+          if (!snapshot.hasData) {
+            return const Center(
+              child: Text("No profile data yet"),
+            );
+          }
+
+          final doc = snapshot.data!;
+
+          if (!doc.exists) {
+            return const Center(
+              child: Text("No profile created yet"),
+            );
+          }
+
+          final data = doc.data() as Map<String, dynamic>?;
+
+          if (data == null) {
+            return const Center(
+              child: Text("Profile is empty"),
+            );
+          }
+
+          final avatar =
+              data["avatar"] ??
+              "https://i.pravatar.cc/300";
+
           return Padding(
 
             padding: const EdgeInsets.all(20),
@@ -43,10 +103,28 @@ class ProfileScreen extends StatelessWidget {
 
               children: [
 
-                const CircleAvatar(
-                  radius: 50,
-                  backgroundImage: NetworkImage(
-                    "https://i.pravatar.cc/300",
+                GestureDetector(
+
+                  onTap: () {
+                    pickImage(userId);
+                  },
+
+                  child: CircleAvatar(
+
+                    radius: 50,
+
+                    backgroundImage: NetworkImage(avatar),
+
+                  ),
+
+                ),
+
+                const SizedBox(height: 10),
+
+                const Text(
+                  "Tap image to change",
+                  style: TextStyle(
+                    color: Colors.grey,
                   ),
                 ),
 
@@ -72,7 +150,6 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 Card(
-
                   child: ListTile(
 
                     leading: const Icon(Icons.edit),
@@ -89,13 +166,10 @@ class ProfileScreen extends StatelessWidget {
                       );
 
                     },
-
                   ),
-
                 ),
 
                 Card(
-
                   child: ListTile(
 
                     leading: const Icon(Icons.logout),
@@ -115,9 +189,7 @@ class ProfileScreen extends StatelessWidget {
                       );
 
                     },
-
                   ),
-
                 ),
 
               ],

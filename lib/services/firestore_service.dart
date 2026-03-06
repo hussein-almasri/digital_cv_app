@@ -68,6 +68,15 @@ class FirestoreService {
 
   }
 
+  // Update Profile Image
+  Future<void> updateProfileImage(String userId, String imageUrl) async {
+
+    await _db.collection("users").doc(userId).update({
+      "avatar": imageUrl,
+    });
+
+  }
+
   // Get User Data
   Stream<DocumentSnapshot> getUser(String userId){
 

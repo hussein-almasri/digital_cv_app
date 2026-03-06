@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import '../../utils/app_colors.dart';
+import '../../services/pdf_service.dart';
 
 class AnalyticsScreen extends StatelessWidget {
 
@@ -157,7 +158,36 @@ class AnalyticsScreen extends StatelessWidget {
                   ],
                 ),
               ),
-            )
+            ),
+
+            const SizedBox(height: 30),
+
+            ElevatedButton(
+
+              onPressed: () {
+
+                PdfService.generateCV(
+
+                  name: "John Doe",
+
+                  email: "john@email.com",
+
+                  bio: "Flutter Developer passionate about building apps.",
+
+                  skills: [
+                    "Flutter",
+                    "Dart",
+                    "Firebase",
+                    "UI Design"
+                  ],
+
+                );
+
+              },
+
+              child: const Text("Export CV as PDF"),
+
+            ),
 
           ],
         ),

@@ -9,7 +9,6 @@ import 'forgot_password_screen.dart';
 import '../main_navigation.dart';
 
 class LoginScreen extends StatefulWidget {
-
   const LoginScreen({super.key});
 
   @override
@@ -26,9 +25,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
 
+      resizeToAvoidBottomInset: true,
+
       body: SafeArea(
 
-        child: Padding(
+        child: SingleChildScrollView(
 
           padding: const EdgeInsets.all(24),
 
@@ -84,9 +85,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         builder: (_) => const ForgotPasswordScreen(),
                       ),
                     );
+
                   },
 
                   child: const Text("Forgot Password?"),
+
                 ),
               ),
 
@@ -101,8 +104,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   final auth = Provider.of<AuthProvider>(context, listen: false);
 
                   await auth.login(
-                    emailController.text,
-                    passwordController.text,
+                    emailController.text.trim(),
+                    passwordController.text.trim(),
                   );
 
                   if (auth.user != null) {
@@ -114,9 +117,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     );
 
+                  } else {
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Login failed"),
+                      ),
+                    );
+
                   }
 
                 },
+
               ),
 
               const SizedBox(height: 30),
@@ -139,13 +151,17 @@ class _LoginScreenState extends State<LoginScreen> {
                           builder: (_) => const RegisterScreen(),
                         ),
                       );
+
                     },
 
                     child: const Text("Register"),
+
                   )
 
                 ],
-              )
+              ),
+
+              const SizedBox(height: 20),
 
             ],
           ),

@@ -1,4 +1,4 @@
-import 'package:digital_cv_app/screens/template_preview_screen.dart';
+import 'package:digital_cv_app/screens/templatess/template_preview_screen.dart' show TemplatePreviewScreen;
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -13,29 +13,25 @@ class TemplatesScreen extends StatelessWidget {
 
       {
         "name": "Modern CV",
-        "image":
-        "https://cdn.dribbble.com/users/1787323/screenshots/15302357/media/6dfc5a0d7e3e2392d6f4858cc5b64cf2.png"
+        "image": "https://picsum.photos/400/600?1"
       },
 
       {
         "name": "Minimal CV",
-        "image":
-        "https://cdn.dribbble.com/users/239910/screenshots/14510294/media/7c4f7cbdeb18f0bc33bd583a14bcbb0d.png"
+        "image": "https://picsum.photos/400/600?2"
       },
 
       {
         "name": "Professional CV",
-        "image":
-        "https://cdn.dribbble.com/users/1218630/screenshots/16593444/media/15e79b3e4eab0e8625995fe9ad49fdb4.png"
+        "image": "https://picsum.photos/400/600?3"
       },
 
       {
         "name": "Creative CV",
-        "image":
-        "https://cdn.dribbble.com/users/1787323/screenshots/15295867/media/b4dff78eaefdd8f2fa14a3cd59cab949.png"
+        "image": "https://picsum.photos/400/600?4"
       },
 
-    ];
+];
 
     return Scaffold(
 
@@ -77,8 +73,10 @@ class TemplatesScreen extends StatelessWidget {
 
                     child: Image.network(
                       template["image"]!,
+                      height: 160,
+                      width: double.infinity,
                       fit: BoxFit.cover,
-                    ),
+                    )
 
                   ),
 
